@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fornecedor: Dental Prime</title>
+  <style>
+    @font-face {
+      font-family: 'EurostileExtended';
+      src: url('EurostileExtended.ttf') format('truetype');
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Eurostile';
+      src: url('Eurostile.ttf') format('truetype');
+      font-display: swap;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Eurostile', sans-serif;
+      background-color: #000000;
+      background-image: url('subtle-carbon.png');
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: #F9F7E9;
+      padding: 20px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 600px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.15) 0px,
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      z-index: 2;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #213c96;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Eurostile', sans-serif;
+    }
+
+    button:hover {
+      background-color: #0e0755;
+    }
+
+    footer {
+      background-color: #000;
+      color: #F9F7E9;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 14px;
+    }
+
+    .btn-voltar {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background-color: #213c96;
+  color: #F9F7E9;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Eurostile', sans-serif;
+  font-size: 80%;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-voltar:hover {
+  background-color: #0e0755;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="card">
+      <h2>DENTAL PRIME</h2>
+      <form action="submit-cliente.php" method="POST">
+        <label for="nome">Produto:</label>
+        <input type="text" id="produto" name="produto" required>
+
+        <label for="preco">Preço:</label>
+        <input type="text" id="preco" name="preco" required>
+
+        <button type="submit">Salvar</button>
+      </form>
+    </div>
+  </div>
+  
+<button class="btn-voltar" onclick="window.location.href='carcaca.html'">Voltar</button>
+
+  <footer>
+    <p>&copy; 2025 Jose Luciano Odontologia. Todos os direitos reservados.</p>
+  </footer>
+
+</body>
+</html>

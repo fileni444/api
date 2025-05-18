@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista Completa de Clientes</title>
+  <style>
+    body {
+      background: #000;
+      background-image: url(subtle-carbon.png);
+      color: #F9F7E9;
+      font-family: 'Eurostile', sans-serif;
+      padding: 20px;
+    }
+    
+    .cliente {
+      background: #F9F7E9;
+      color: #000;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+ 
+ .cliente:before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.05) 0,
+          rgba(0,0,0,0.05) 1px,
+          transparent 1px,
+          transparent 2px
+        );
+      z-index: 10;
+    }
+    
+    button {
+      margin-left: 10px;
+      background-color: #213c96;
+      color: #F9F7E9;
+      border: none;
+      padding: 5px 10px;
+        font-family: 'Eurostile', sans-serif;
+
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0e0755;
+    }
+    input {
+      padding: 5px;
+      width: 150px;
+    }
+
+.btn-voltar {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background-color: #213c96;
+  color: #F9F7E9;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Eurostile', sans-serif;
+  font-size: 80%;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-voltar:hover {
+  background-color: #0e0755;
+}
+
+    
+  </style>
+</head>
+<body>
+
+  <h1>Clientes</h1>
+  <div id="clientes-container">Carregando...</div>
+
+
+<button class="btn-voltar" onclick="window.location.href='carcaca.html'">Voltar</button>
+
+
+
+    <footer>
+    <p>&copy; 2025 Jose Luciano Odontologia. Todos os direitos reservados.</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJ25CT4YUp-T2MGkmv5yikSBDjBSvsy2A",
+      authDomain: "clientes-f4090.firebaseapp.com",
+      projectId: "clientes-f4090",
+      storageBucket: "clientes-f4090.firebasestorage.app",
+      messagingSenderId: "531002842563",
+      appId: "1:531002842563:web:0e24dfafb872d8553f7176"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const container = document.getElementById("clientes-container");
+
+    async function carregarClientes() {
+      container.innerHTML = "";
+      const snapshot = await getDocs(collection(db, "clientes"));
+      snapshot.forEach(docSnap => {
+        const nome = docSnap.data().nome;
+        const clienteDiv = document.createElement("div");
+        clienteDiv.className = "cliente";
+
+        const nomeInput = document.createElement("input");
+        nomeInput.value = nome;
+
+        const salvarBtn = document.createElement("button");
+        salvarBtn.textContent = "Salvar";
+        salvarBtn.onclick = async () => {
+          await updateDoc(doc(db, "clientes", docSnap.id), {
+            nome: nomeInput.value.trim()
+          });
+          alert("Atualizado!");
+        };
+
+        const excluirBtn = document.createElement("button");
+        excluirBtn.textContent = "Excluir";
+        excluirBtn.onclick = async () => {
+          await deleteDoc(doc(db, "clientes", docSnap.id));
+          carregarClientes();
+        };
+
+        clienteDiv.appendChild(nomeInput);
+        clienteDiv.appendChild(salvarBtn);
+        clienteDiv.appendChild(excluirBtn);
+        container.appendChild(clienteDiv);
+      });
+    }
+
+    carregarClientes();
+  </script>
+</body>
+</html>

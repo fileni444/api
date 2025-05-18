@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adicionar Serviço</title>
+  <style>
+    @font-face {
+      font-family: 'EurostileExtended';
+      src: url('EurostileExtended.ttf') format('truetype');
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Eurostile';
+      src: url('Eurostile.ttf') format('truetype');
+      font-display: swap;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Eurostile', sans-serif;
+      background-color: #000000;
+      background-image: url('subtle-carbon.png');
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: #F9F7E9;
+      padding: 20px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 600px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.15) 0px,
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      z-index: 2;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #213c96;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Eurostile', sans-serif;
+    }
+
+    button:hover {
+      background-color: #0e0755;
+    }
+
+    footer {
+      background-color: #000;
+      color: #F9F7E9;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 14px;
+    }
+
+    .btn-voltar {
+      margin-top: 20px;
+      padding: 12px 24px;
+      background-color: #213c96;
+      color: #F9F7E9;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Eurostile', sans-serif;
+      font-size: 80%;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn-voltar:hover {
+      background-color: #0e0755;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="card">
+      <h2>ADICIONAR SERVIÇO</h2>
+      <form id="formServico">
+        <label for="nome">Serviço:</label>
+        <input type="text" id="nome" name="nome" required>
+
+        <label for="preco">Preço:</label>
+        <input type="text" id="preco" name="preco" required>
+
+        <button type="submit">Salvar</button>
+      </form>
+      <p id="status"></p>
+    </div>
+  </div>
+  
+  <button class="btn-voltar" onclick="window.location.href='carcaca.html'">Voltar</button>
+
+  <footer>
+    <p>&copy; 2025 Jose Luciano Odontologia. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    document.getElementById('formServico').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nome = document.getElementById('nome').value.trim();
+      const preco = document.getElementById('preco').value.trim();
+      const token = localStorage.getItem('token');
+
+      try {
+        const res = await fetch('http://localhost:4040/servicos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ nome, preco })
+        });
+
+        const data = await res.json();
+
+        const status = document.getElementById('status');
+        if (res.ok) {
+          status.style.color = 'green';
+          status.textContent = 'Serviço adicionado com sucesso!';
+          e.target.reset();
+        } else {
+          status.style.color = 'red';
+          status.textContent = 'Erro: ' + (data.erro || 'falha desconhecida');
+        }
+      } catch (err) {
+        alert('Erro ao conectar com a API');
+        console.error(err);
+      }
+    });
+  </script>
+
+</body>
+</html>
