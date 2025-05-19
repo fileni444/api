@@ -794,18 +794,18 @@
 
  <a href="dental-prime.html" class="card-fornecedor">
   <h3>DENTAL PRIME</h3>
-  <ul></ul>
+  <ul id="lista-dental-prime"></ul>
 </a>
 
 
     <a href="Odonto-Supreme.html" class="card-fornecedor">
       <h3>ODONTO SUPREME</h3>
-      <ul></ul>
+      <ul id="lista-odonto-supreme"></ul>
     </a>
 
     <a href="Sorriso-Total.html" class="card-fornecedor">
       <h3>SORRISO TOTAL</h3>
-      <ul></ul>
+      <ul id="lista-sorriso-total"></ul>
     </a>
 
   </div>
@@ -1151,6 +1151,35 @@ function atualizarCardAgendados() {
   }
 
   carregarProdutosFornecedores();
+</script>
+
+<script>
+  const fornecedores = [
+    { nome: 'DENTAL PRIME', ulId: 'lista-dental-prime' },
+    { nome: 'ODONTO SUPREME', ulId: 'lista-odonto-supreme' },
+    { nome: 'SORRISO TOTAL', ulId: 'lista-sorriso-total' }
+  ];
+
+  async function carregarProdutosTodos() {
+    for (const fornecedor of fornecedores) {
+      try {
+        const res = await fetch(`http://localhost:4040/fornecedores/${encodeURIComponent(fornecedor.nome)}`);
+        const dados = await res.json();
+        const ul = document.getElementById(fornecedor.ulId);
+        if (!ul) continue;
+        ul.innerHTML = '';
+        dados.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = `${item.produtos}: R$ ${parseFloat(item.precos).toFixed(2)}`;
+          ul.appendChild(li);
+        });
+      } catch (err) {
+        console.error(`Erro ao carregar produtos de ${fornecedor.nome}:`, err);
+      }
+    }
+  }
+
+  carregarProdutosTodos();
 </script>
 
 </script>

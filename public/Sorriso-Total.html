@@ -131,16 +131,18 @@
 
   <div class="container">
     <div class="card">
-      <h2>SORRISO TOTAL</h2>
-      <form id="form-sorriso-total">
-        <label for="produto">Produto:</label>
-        <input type="text" id="produto" name="produto" required>
+      <ul id="lista-produtos"></ul>
 
-        <label for="preco">Preço:</label>
-        <input type="text" id="preco" name="preco" required>
+<form id="form-sorriso-total">
+  <label for="produto">Produto:</label>
+  <input type="text" id="produto" name="produto" required>
 
-        <button type="submit">Salvar</button>
-      </form>
+  <label for="preco">Preço:</label>
+  <input type="text" id="preco" name="preco" required>
+
+  <button type="submit">Salvar</button>
+</form>
+
     </div>
   </div>
   
@@ -151,41 +153,58 @@
   </footer>
 
   <script>
-    document.getElementById('form-sorriso-total').addEventListener('submit', async function(e) {
-      e.preventDefault();
+  const fornecedor = 'SORRISO TOTAL';
 
-      const produto = document.getElementById('produto').value;
-      const preco = document.getElementById('preco').value;
+  document.getElementById('form-sorriso-total').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const produto = document.getElementById('produto').value;
+    const preco = document.getElementById('preco').value;
+    const token = localStorage.getItem('token');
 
-      try {
-        const response = await fetch('http://localhost:4040/fornecedores', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + localStorage.getItem('token')
-  },
-  body: JSON.stringify({
-    nome: produto,
-    precos: preco
-  })
-});
+    try {
+      const response = await fetch('http://localhost:4040/fornecedores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ nome: fornecedor, produtos: produto, precos: preco })
+      });
 
-
-        const data = await response.json();
-
-        if (response.ok) {
-          alert('Produto salvo com sucesso!');
-          document.getElementById('produto').value = '';
-          document.getElementById('preco').value = '';
-        } else {
-          alert(data.erro || 'Erro ao salvar produto');
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Erro ao conectar com o servidor');
+      const data = await response.json();
+      if (response.ok) {
+        alert('Produto salvo com sucesso!');
+        document.getElementById('produto').value = '';
+        document.getElementById('preco').value = '';
+        carregarProdutos();
+      } else {
+        alert(data.erro || 'Erro ao salvar produto');
       }
-    });
-  </script>
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao conectar com o servidor');
+    }
+  });
+
+  async function carregarProdutos() {
+    try {
+      const res = await fetch(`http://localhost:4040/fornecedores/${encodeURIComponent(fornecedor)}`);
+      const dados = await res.json();
+      const lista = document.getElementById('lista-produtos');
+      lista.innerHTML = '';
+      dados.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.produtos}: R$ ${parseFloat(item.precos).toFixed(2)}`;
+        lista.appendChild(li);
+      });
+    } catch (error) {
+      console.error('Erro ao carregar produtos:', error);
+    }
+  }
+
+  carregarProdutos();
+</script>
+
 
 </body>
 </html>

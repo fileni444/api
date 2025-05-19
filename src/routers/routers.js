@@ -23,22 +23,57 @@ const {
 
 const router = express.Router();
 
-// Rotas de fornecedores e serviços
-router.post('/fornecedores', auth, async (req, res) => {
-  const { nome, preco } = req.body;
+// ========================
+// ROTAS DE FORNECEDORES
+// ========================
 
-  if (!nome || !preco) {
-    return res.status(400).json({ erro: 'Nome e preço são obrigatórios.' });
+// Criar fornecedor (com produtos e preços)
+router.post('/fornecedores', auth, async (req, res) => {
+  const { nome, produtos, precos } = req.body;
+
+  if (!nome || !produtos || !precos) {
+    return res.status(400).json({ erro: 'Nome, produto e preço são obrigatórios.' });
   }
 
   try {
-    await db.query('INSERT INTO fornecedores (nome, preco) VALUES (?, ?)', [nome, preco]);
+    await db.query('INSERT INTO fornecedores (nome, produtos, precos) VALUES (?, ?, ?)', [nome, produtos, precos]);
     res.status(201).json({ msg: 'Fornecedor cadastrado com sucesso!' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: 'Erro ao cadastrar fornecedor.' });
   }
 });
+
+// Buscar todos os fornecedores e seus produtos
+router.get('/fornecedores-produtos', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT nome, produtos, precos FROM fornecedores');
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: 'Erro ao buscar produtos dos fornecedores' });
+  }
+});
+
+// Buscar produtos de um fornecedor específico
+router.get('/fornecedores/:nome', async (req, res) => {
+  const { nome } = req.params;
+
+  try {
+    const [rows] = await db.query(
+      'SELECT produtos, precos FROM fornecedores WHERE UPPER(nome) = UPPER(?)',
+      [nome]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: 'Erro ao buscar produtos do fornecedor' });
+  }
+});
+
+// ========================
+// ROTAS DE SERVIÇOS
+// ========================
 
 router.post('/servicos', auth, async (req, res) => {
   const { nome, preco } = req.body;
@@ -56,7 +91,18 @@ router.post('/servicos', auth, async (req, res) => {
   }
 });
 
-// ✅ Nova rota para exibir os serviços de dentistas
+// Buscar todos os serviços
+router.get('/servicos-lista', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM servicos');
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: 'Erro ao buscar os serviços' });
+  }
+});
+
+// Buscar serviços por dentistas
 router.get('/servicos-dentistas', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT dentista, servico, preco FROM servicos_dentistas');
@@ -67,56 +113,18 @@ router.get('/servicos-dentistas', async (req, res) => {
   }
 });
 
-//rota de servicos
-router.get('/servicos-lista', async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT * FROM servicos');
-    res.json(rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao buscar os serviços' });
-  }
-});
-//rota de fornecedores
-router.get('/fornecedores-produtos', async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT nome, produtos, preco FROM fornecedores');
-    res.json(rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ erro: 'Erro ao buscar produtos dos fornecedores' });
-  }
-});
-router.post('/fornecedores', async (req, res) => {
-  const { nome, produtos, precos } = req.body;
+// ========================
+// AUTENTICAÇÃO FIXA
+// ========================
 
-  if (!nome || !produtos || !precos) {
-    return res.status(400).json({ erro: 'Nome, produto e preço são obrigatórios.' });
-  }
-
-  try {
-    await db.query('INSERT INTO fornecedores (nome, produtos, precos) VALUES (?, ?, ?)', [nome, produtos, precos]);
-    res.status(201).json({ msg: 'Fornecedor cadastrado com sucesso!' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao cadastrar fornecedor.' });
-  }
-});
-
-
-
-
-// Gera senha criptografada a partir do .env
 const senhaHash = bcrypt.hashSync(process.env.USER_PASSWORD, 8);
 
-// Usuário fixo com dados do .env
 const usuarioUnico = {
   id: 1,
   email: process.env.USER_EMAIL,
   senha: senhaHash,
 };
 
-// Rota pública: Login
 router.post('/login', (req, res) => {
   const { email, senha } = req.body;
 
@@ -134,14 +142,20 @@ router.post('/login', (req, res) => {
   res.json({ auth: true, token });
 });
 
-// Rotas protegidas para clientes
+// ========================
+// ROTAS DE CLIENTES
+// ========================
+
 router.get('/clientes', auth, getClientes);
 router.get('/clientes/:id', auth, getClienteById);
 router.post('/clientes', auth, createCliente);
 router.put('/clientes/:id', auth, updateCliente);
 router.delete('/clientes/:id', auth, deleteCliente);
 
-// Rotas protegidas para agendamentos
+// ========================
+// ROTAS DE AGENDAMENTOS
+// ========================
+
 router.post('/agendamentos', auth, createAgendamento);
 router.get('/agendamentos', auth, getAgendamentos);
 router.get('/agendamentos/:id', auth, getAgendamentoById);
