@@ -357,14 +357,13 @@
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s;
-  color: #333; / Cor do texto /
+  color: #0000; / Cor do texto /
   position: relative;
   overflow: hidden;
-  filter: contrast(110%) brightness(90%) saturate(150%); / Efeito de saturação e brilho /
-  transform: translate3d(0, 0, 0); / Para corrigir alguns efeitos de distorção /
+  filter: contrast(110%) brightness(90%) saturate(150%); 
+  transform: translate3d(0, 0, 0); 
 }
 
-/ Animação de scanlines (linhas de escaneamento) /
 .card-fornecedor::before {
   content: '';
   position: absolute;
