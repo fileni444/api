@@ -4,6 +4,6 @@ require('./config/db'); // inicializa o banco
 const api = require('./api'); // app configurado já com as rotas e middlewares
 
 // Sobe o servidor
-api.listen(process.env.PORT, () => {
+app.listen(4040, '0.0.0.0', () => {
   console.log('\nAPI INICIALIZADA!!');
 });
